@@ -27,7 +27,7 @@ func (r *MimirClient) CreateRuleGroup(ctx context.Context, namespace string, rg 
 	}
 
 	escapedNamespace := url.PathEscape(namespace)
-	path := r.apiPath + "/" + escapedNamespace
+	path := r.rulerAPIPath + "/" + escapedNamespace
 
 	res, err := r.doRequest(ctx, path, "POST", bytes.NewBuffer(payload), int64(len(payload)))
 	if err != nil {
@@ -43,7 +43,7 @@ func (r *MimirClient) CreateRuleGroup(ctx context.Context, namespace string, rg 
 func (r *MimirClient) DeleteRuleGroup(ctx context.Context, namespace, groupName string) error {
 	escapedNamespace := url.PathEscape(namespace)
 	escapedGroupName := url.PathEscape(groupName)
-	path := r.apiPath + "/" + escapedNamespace + "/" + escapedGroupName
+	path := r.rulerAPIPath + "/" + escapedNamespace + "/" + escapedGroupName
 
 	res, err := r.doRequest(ctx, path, "DELETE", nil, -1)
 	if err != nil {
@@ -59,7 +59,7 @@ func (r *MimirClient) DeleteRuleGroup(ctx context.Context, namespace, groupName 
 func (r *MimirClient) GetRuleGroup(ctx context.Context, namespace, groupName string) (*rwrulefmt.RuleGroup, error) {
 	escapedNamespace := url.PathEscape(namespace)
 	escapedGroupName := url.PathEscape(groupName)
-	path := r.apiPath + "/" + escapedNamespace + "/" + escapedGroupName
+	path := r.rulerAPIPath + "/" + escapedNamespace + "/" + escapedGroupName
 
 	fmt.Println(path)
 	res, err := r.doRequest(ctx, path, "GET", nil, -1)
@@ -89,7 +89,7 @@ func (r *MimirClient) GetRuleGroup(ctx context.Context, namespace, groupName str
 
 // ListRules retrieves a rule group
 func (r *MimirClient) ListRules(ctx context.Context, namespace string) (map[string][]rwrulefmt.RuleGroup, error) {
-	path := r.apiPath
+	path := r.rulerAPIPath
 	if namespace != "" {
 		path = path + "/" + namespace
 	}
@@ -118,7 +118,7 @@ func (r *MimirClient) ListRules(ctx context.Context, namespace string) (map[stri
 // DeleteNamespace delete all the rule groups in a namespace including the namespace itself
 func (r *MimirClient) DeleteNamespace(ctx context.Context, namespace string) error {
 	escapedNamespace := url.PathEscape(namespace)
-	path := r.apiPath + "/" + escapedNamespace
+	path := r.rulerAPIPath + "/" + escapedNamespace
 
 	res, err := r.doRequest(ctx, path, "DELETE", nil, -1)
 	if err != nil {

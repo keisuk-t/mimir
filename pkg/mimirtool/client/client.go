@@ -23,8 +23,9 @@ import (
 )
 
 const (
-	rulerAPIPath  = "/prometheus/config/v1/rules"
-	legacyAPIPath = "/api/v1/rules"
+	rulerAPIPath       = "/config/v1/rules"
+	legacyRulerAPIPath = "/api/v1/rules"
+	queryAPIPath       = "/api/v1/query"
 )
 
 var (
@@ -36,24 +37,26 @@ var (
 
 // Config is used to configure a MimirClient.
 type Config struct {
-	User            string `yaml:"user"`
-	Key             string `yaml:"key"`
-	Address         string `yaml:"address"`
-	ID              string `yaml:"id"`
-	TLS             tls.ClientConfig
-	UseLegacyRoutes bool   `yaml:"use_legacy_routes"`
-	AuthToken       string `yaml:"auth_token"`
+	User                 string `yaml:"user"`
+	Key                  string `yaml:"key"`
+	Address              string `yaml:"address"`
+	ID                   string `yaml:"id"`
+	TLS                  tls.ClientConfig
+	UseLegacyRoutes      bool   `yaml:"use_legacy_routes"`
+	AuthToken            string `yaml:"auth_token"`
+	PrometheusHTTPPrefix string `yaml:"prometheus_http_prefix"`
 }
 
 // MimirClient is a client to the Mimir API.
 type MimirClient struct {
-	user      string
-	key       string
-	id        string
-	endpoint  *url.URL
-	Client    http.Client
-	apiPath   string
-	authToken string
+	user         string
+	key          string
+	id           string
+	endpoint     *url.URL
+	Client       http.Client
+	rulerAPIPath string
+	queryAPIPath string
+	authToken    string
 }
 
 // New returns a new MimirClient.
@@ -91,23 +94,24 @@ func New(cfg Config) (*MimirClient, error) {
 
 	path := rulerAPIPath
 	if cfg.UseLegacyRoutes {
-		path = legacyAPIPath
+		path = legacyRulerAPIPath
 	}
 
 	return &MimirClient{
-		user:      cfg.User,
-		key:       cfg.Key,
-		id:        cfg.ID,
-		endpoint:  endpoint,
-		Client:    client,
-		apiPath:   path,
-		authToken: cfg.AuthToken,
+		user:         cfg.User,
+		key:          cfg.Key,
+		id:           cfg.ID,
+		endpoint:     endpoint,
+		Client:       client,
+		rulerAPIPath: cfg.PrometheusHTTPPrefix + path,
+		queryAPIPath: cfg.PrometheusHTTPPrefix + queryAPIPath,
+		authToken:    cfg.AuthToken,
 	}, nil
 }
 
 // Query executes a PromQL query against the Mimir cluster.
 func (r *MimirClient) Query(ctx context.Context, query string) (*http.Response, error) {
-	req := fmt.Sprintf("/prometheus/api/v1/query?query=%s&time=%d", url.QueryEscape(query), time.Now().Unix())
+	req := fmt.Sprintf("%s?query=%s&time=%d", r.queryAPIPath, url.QueryEscape(query), time.Now().Unix())
 
 	res, err := r.doRequest(ctx, req, "GET", nil, -1)
 	if err != nil {

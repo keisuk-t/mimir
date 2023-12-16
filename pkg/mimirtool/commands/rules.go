@@ -193,6 +193,11 @@ func (r *RuleCommand) Register(app *kingpin.Application, envVars EnvVarNames, re
 			Default("false").
 			Envar(envVars.TLSInsecureSkipVerify).
 			BoolVar(&r.ClientConfig.TLS.InsecureSkipVerify)
+
+		c.Flag("prometheus-http-prefix", "HTTP URL path under which the Prometheus api will be served, set "+envVars.PrometheusHTTPPrefix+".").
+			Default("/prometheus").
+			Envar(envVars.PrometheusHTTPPrefix).
+			StringVar(&r.ClientConfig.PrometheusHTTPPrefix)
 	}
 
 	// Print Rules Command

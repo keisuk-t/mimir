@@ -3,16 +3,18 @@
 package commands
 
 type EnvVarNames struct {
-	Address               string
-	APIKey                string
-	APIUser               string
-	TLSCAPath             string
-	TLSCertPath           string
-	TLSKeyPath            string
-	TLSInsecureSkipVerify string
-	TenantID              string
-	UseLegacyRoutes       string
-	AuthToken             string
+	Address                string
+	APIKey                 string
+	APIUser                string
+	TLSCAPath              string
+	TLSCertPath            string
+	TLSKeyPath             string
+	TLSInsecureSkipVerify  string
+	TenantID               string
+	UseLegacyRoutes        string
+	AuthToken              string
+	AlertmanagerHTTPPrefix string
+	PrometheusHTTPPrefix   string
 }
 
 func NewEnvVarsWithPrefix(prefix string) EnvVarNames {
@@ -27,6 +29,7 @@ func NewEnvVarsWithPrefix(prefix string) EnvVarNames {
 		tlsInsecureSkipVerify = "TLS_INSECURE_SKIP_VERIFY"
 		useLegacyRoutes       = "USE_LEGACY_ROUTES"
 		authToken             = "AUTH_TOKEN"
+		PrometheusHTTPPrefix  = "PROMETHEUS_HTTP_PREFIX"
 	)
 
 	if len(prefix) > 0 && prefix[len(prefix)-1] != '_' {
@@ -44,5 +47,6 @@ func NewEnvVarsWithPrefix(prefix string) EnvVarNames {
 		TenantID:              prefix + tenantID,
 		UseLegacyRoutes:       prefix + useLegacyRoutes,
 		AuthToken:             prefix + authToken,
+		PrometheusHTTPPrefix:  prefix + PrometheusHTTPPrefix,
 	}
 }
